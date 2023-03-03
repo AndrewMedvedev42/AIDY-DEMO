@@ -1,0 +1,32 @@
+#content{
+    border: rgb(43, 43, 43) 20px solid;
+    border-radius: 40px;
+    width: 323px;
+    height: 700px;
+}
+
+.mobileHeader{
+    padding-top: 10px;
+    color: rgb(124, 124, 255);
+}
+
+.mobileHeader h1{
+    margin-left: 20px;
+    font-size: 30px;
+
+}
+
+#startRecognizeOnceAsyncButton{
+    display: flex;
+    align-items: center;
+}
+
+.recogContent{
+    margin: 20px;
+    text-align: center;
+    font-size: 20px;
+}
+.recogContent img{
+    width:100%;
+    height:auto;
+}

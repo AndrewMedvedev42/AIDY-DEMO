@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Microsoft Cognitive Services Speech SDK JavaScript Quickstart</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; font-size:13px;">
+  <div id="content" style="display:none">
+    <div class="mobileHeader">
+      <h1>AIDY</h1>
+    </div>
+    <div id="startRecognizeOnceAsyncButton">
+      <div class="recogContent">
+        <img src="https://parspng.com/wp-content/uploads/2022/07/bubblepng.parspng.com-8-300x300.png" alt="">
+        <p id="recordMessage">Tap and say something...</p>
+      </div>
+    </div>
+    <div class="recogContent">
+      <label for="">Input</label>
+      <textarea name="" id="userDiv" cols="30" rows="4" placeholder="Input..."></textarea>
+      <label for="">Response</label>
+      <textarea name="" id="responseDiv" cols="30" rows="4" placeholder="Response..."></textarea>
+    </div>
+  </div>
+  <!-- </uidiv> -->
+
+  <!-- <speechsdkref> -->
+  <!-- Speech SDK reference sdk. -->
+  <script src="https://aka.ms/csspeech/jsbrowserpackageraw"></script>
+  <!-- </speechsdkref> -->
+
+  <!-- <quickstartcode> -->
+  <!-- Speech SDK USAGE -->
+  <script>
+    // status fields and start button in UI
+    var userDiv;
+    var responseDiv;
+    var startRecognizeOnceAsyncButton;
+
+    // subscription key and region for speech services.
+    var subscriptionKey, serviceRegion;
+    var SpeechSDK;
+    var recognizer;
+
+    document.addEventListener("DOMContentLoaded", function () {
+      startRecognizeOnceAsyncButton = document.getElementById("startRecognizeOnceAsyncButton");
+      subscriptionKey = "subscriptionKey"
+      serviceRegion = "eastus"
+      userDiv = document.getElementById("userDiv");
+      responseDiv = document.getElementById("responseDiv");
+
+      startRecognizeOnceAsyncButton.addEventListener("click", function () {
+        startRecognizeOnceAsyncButton.disabled = true;
+        userDiv.innerHTML = "";
+        responseDiv.innerHTML = "";
+        recordMessage.innerHTML = "Recording..."
+
+        if (subscriptionKey === "") {
+          alert("Please enter your Microsoft Cognitive Services Speech subscription key!");
+          return;
+        }
+        var speechConfig = SpeechSDK.SpeechConfig.fromSubscription(subscriptionKey, serviceRegion);
+
+        speechConfig.speechRecognitionLanguage = "en-US";
+        var audioConfig  = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
+        recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
+
+        recognizer.recognizeOnceAsync(
+          async function (result) {
+            startRecognizeOnceAsyncButton.disabled = false;
+            userDiv.innerHTML += result.text
+            recordMessage.innerHTML = "Tap and say something..."
+            window.console.log(result);
+
+            const response = await fetch("POST", {
+                method:'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(result.text)
+            })
+
+            const data = await response.text();
+            responseDiv.innerHTML += data;
+            console.log(data);
+
+            recognizer.close();
+            recognizer = undefined;
+          },
+          function (err) {
+            startRecognizeOnceAsyncButton.disabled = false;
+            phraseDiv.innerHTML += err;
+            window.console.log(err);
+
+            recognizer.close();
+            recognizer = undefined;
+          });
+      });
+
+      if (!!window.SpeechSDK) {
+        SpeechSDK = window.SpeechSDK;
+        startRecognizeOnceAsyncButton.disabled = false;
+
+        document.getElementById('content').style.display = 'block';
+        document.getElementById('warning').style.display = 'none';
+      }
+    });
+  </script>
+  <!-- </quickstartcode> -->
+</body>
+</html>
